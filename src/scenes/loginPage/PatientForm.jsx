@@ -1,17 +1,74 @@
 import React, { useState } from 'react';
-import { Box, Button, TextField, Typography, useTheme } from "@mui/material";
+import { Box, Button, TextField, Typography, useTheme, Select, MenuItem, FormControl, InputLabel,  FormHelperText  } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import Dropzone from "react-dropzone";
 import FlexBetween from "components/FlexBetween";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { Spin, notification } from 'antd';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 const PatientForm = ({ handleFormSubmit }) => {
   const { palette } = useTheme();
   const role = "patient";
   const [loading, setLoading] = useState(false);
+  const groupesSanguins = [
+    "A positif (A+)",
+    "A négatif (A-)",
+    "B positif (B+)",
+    "B négatif (B-)",
+    "AB positif (AB+)",
+    "AB négatif (AB-)",
+    "O positif (O+)",
+    "O négatif (O-)"
+  ];
+  const BloodTypeSelect = ({ values, handleBlur, handleChange, touched, errors }) => (
+    <FormControl sx={{ gridColumn: "span 2" }} error={Boolean(touched.BloodType) && Boolean(errors.BloodType)}>
+      <InputLabel>Groupe sanguin</InputLabel>
+      <Select
+        label="Groupe sanguin"
+        onBlur={handleBlur}
+        onChange={handleChange}
+        value={values.BloodType}
+        name="BloodType"
+      >
+        <MenuItem value="">Sélectionner</MenuItem>
+        {groupesSanguins.map((groupe, index) => (
+          <MenuItem key={index} value={groupe}>
+            {groupe}
+          </MenuItem>
+        ))}
+      </Select>
+      {touched.BloodType && errors.BloodType && (
+        <FormHelperText>{errors.BloodType}</FormHelperText>
+      )}
+    </FormControl>
+  );
   
+  const genders = ["Femme", "Homme"];
+  const GenderSelect = ({ values, handleBlur, handleChange, touched, errors }) => (
+    <FormControl sx={{ gridColumn: "span 2" }} error={Boolean(touched.Gender) && Boolean(errors.Gender)}>
+      <InputLabel>Genre</InputLabel>
+      <Select
+        label="Genre"
+        onBlur={handleBlur}
+        onChange={handleChange}
+        value={values.Gender}
+        name="Gender"
+      >
+        <MenuItem value="">Sélectionner</MenuItem>
+        {genders.map((gender, index) => (
+          <MenuItem key={index} value={gender}>
+            {gender}
+          </MenuItem>
+        ))}
+      </Select>
+      {touched.Gender && errors.Gender && (
+        <FormHelperText>{errors.Gender}</FormHelperText>
+      )}
+    </FormControl>
+  );
 
   const initialValuesRegister = {
     firstname: "",
@@ -20,6 +77,13 @@ const PatientForm = ({ handleFormSubmit }) => {
     password: "",
     role: "patient",
     picture: null,
+    PhoneNumber: "",
+    Gender: "",
+    Height: "",
+    Weight: "",
+    BloodType: "",
+    Address: "",
+    Birthdate: "",
   };
 
   const registerSchema = yup.object().shape({
@@ -28,6 +92,13 @@ const PatientForm = ({ handleFormSubmit }) => {
     email: yup.string().email("Email invalide").required("Champ requis"),
     password: yup.string().required("Champ requis"),
     picture: yup.mixed().required("required"),
+    PhoneNumber: yup.string().required("Champ requis"),
+    Gender: yup.string().required("Champ requis"),
+    Height: yup.string().required("Champ requis"),
+    Weight: yup.string().required("Champ requis"),
+    BloodType: yup.string().required("Champ requis"),
+    Address: yup.string().required("Champ requis"),
+    Birthdate: yup.date().required("Champ requis"),
   });
 
   const handleSubmit = async (values, onSubmitProps) => {
@@ -39,15 +110,17 @@ const PatientForm = ({ handleFormSubmit }) => {
     formData.append("password", values.password);
     formData.append("role", role);
     formData.append("picturePath", values.picture.name);
-    
+    formData.append("PhoneNumber", values.PhoneNumber);
+    formData.append("Gender", values.Gender);
+    formData.append("Height", values.Height);
+    formData.append("Weight", values.Weight);
+    formData.append("BloodType", values.BloodType);
+    formData.append("Address", values.Address);
+    formData.append("Birthdate", values.Birthdate);
+
     await handleFormSubmit(formData, onSubmitProps);
     setLoading(false);
-
   };
-
-  
-
-  
 
   return (
     <Formik
@@ -112,7 +185,86 @@ const PatientForm = ({ handleFormSubmit }) => {
               helperText={touched.password && errors.password}
               sx={{ gridColumn: "span 4" }}
             />
-            {/* Image de profil */}
+            <Box gridColumn="span 4">
+              <Typography variant="body1" color="textSecondary" gutterBottom>
+                Numéro de téléphone
+              </Typography>
+              <PhoneInput
+                country={'tn'}
+                placeholder="+216-12 345 6789"
+                value={values.PhoneNumber}
+                onChange={phoneNumber => setFieldValue('PhoneNumber', phoneNumber)}
+                inputProps={{
+                  name: 'PhoneNumber',
+                  required: true,
+                  autoFocus: false
+                }}
+                containerStyle={{ width: '100%' }}
+                inputStyle={{ width: '100%' }}
+              />
+              {touched.PhoneNumber && Boolean(errors.PhoneNumber) && (
+                <Typography color="error" variant="body2">
+                  {errors.PhoneNumber}
+                </Typography>
+              )}
+            </Box>
+            <GenderSelect
+              values={values}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              touched={touched}
+              errors={errors}
+            />
+
+            <TextField
+              label="Taille"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.Height}
+              name="Height"
+              error={Boolean(touched.Height) && Boolean(errors.Height)}
+              helperText={touched.Height && errors.Height}
+              sx={{ gridColumn: "span 2" }}
+            />
+            <TextField
+              label="Poids"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.Weight}
+              name="Weight"
+              error={Boolean(touched.Weight) && Boolean(errors.Weight)}
+              helperText={touched.Weight && errors.Weight}
+              sx={{ gridColumn: "span 2" }}
+            />
+            <BloodTypeSelect
+              values={values}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              touched={touched}
+              errors={errors}
+            />
+            <TextField
+              label="Adresse"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.Address}
+              name="Address"
+              error={Boolean(touched.Address) && Boolean(errors.Address)}
+              helperText={touched.Address && errors.Address}
+              sx={{ gridColumn: "span 2" }}
+            />
+            <TextField
+              label="Date de naissance"
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.Birthdate}
+              name="Birthdate"
+              error={Boolean(touched.Birthdate) && Boolean(errors.Birthdate)}
+              helperText={touched.Birthdate && errors.Birthdate}
+              sx={{ gridColumn: "span 2" }}
+            />
             <Box
               gridColumn="span 4"
               border={`1px solid ${palette.neutral.medium}`}
@@ -147,7 +299,6 @@ const PatientForm = ({ handleFormSubmit }) => {
               </Dropzone>
             </Box>
           </Box>
-          {/* Boutons et autres éléments UI */}
           <Button
             fullWidth
             type="submit"
@@ -163,8 +314,6 @@ const PatientForm = ({ handleFormSubmit }) => {
           >
             {loading ? <Spin /> : "S'INSCRIRE EN TANT QUE PATIENT"}
           </Button>
-         
-         
         </form>
       )}
     </Formik>

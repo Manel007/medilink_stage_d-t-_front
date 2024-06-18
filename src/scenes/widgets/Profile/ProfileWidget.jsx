@@ -12,6 +12,7 @@ import { Button, Modal } from 'antd';
 import { Edit } from '@mui/icons-material';
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { apiUrl } from 'index';
+import { AiFillPhone } from "react-icons/ai";
 
 const ProfileWidget = ({ user, userId }) => {
   console.log("user from profile widget ", user.role);
@@ -20,7 +21,7 @@ const ProfileWidget = ({ user, userId }) => {
   const [profileUpdated, setProfileUpdated] = useState(false); // State to trigger rerender
 
   const fullName = `${user.firstname} ${user.lastname}`;
-
+console.log("wawa",userId);
   useEffect(() => {
     // Use this effect to rerender when profileUpdated state changes
     if (profileUpdated) {
@@ -53,6 +54,59 @@ const ProfileWidget = ({ user, userId }) => {
     }
   };
 
+  const [patientData, setPatientData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPatientData = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/patients/${userId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch patient data');
+        }
+        const data = await response.json();
+        setPatientData(data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching patient data:', error);
+      }
+    };
+
+    fetchPatientData();
+  }, [userId]); // Déclencher le fetch chaque fois que userId change
+
+  if (loading) {
+    return <div>Loading...</div>; // Affichage en cas de chargement
+  }
+  // Function to format phone number to "216 999 999 99" format
+  const formatPhoneNumber = (phoneNumber) => {
+    const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{3})(\d{2})$/);
+    if (match) {
+      return match[1] + ' ' + match[2] + ' ' + match[3] + ' ' + match[4];
+    }
+    return phoneNumber; // return original if not matched
+  };
+  // Function to format birthdate from ISO format to "DD Month YYYY" format
+const formatBirthdate = (birthdate) => {
+  if (!birthdate) return ''; // Return empty string if birthdate is falsy
+
+  const dateObj = new Date(birthdate); // Create a Date object from the birthdate string
+
+  // List of month names for formatting
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June', 
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  const day = dateObj.getDate(); // Get day of the month
+  const monthIndex = dateObj.getMonth(); // Get month index (0-based)
+  const year = dateObj.getFullYear(); // Get full year
+
+  // Format the date as "DD Month YYYY"
+  return `${day} ${monthNames[monthIndex]} ${year}`;
+};
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <Box sx={{ width: '100%' }} />
@@ -73,9 +127,41 @@ const ProfileWidget = ({ user, userId }) => {
         />
         <Edit style={{ cursor: 'pointer', color: 'blue', position: "relative", right: "540px", bottom: "40px" }} onClick={() => setUpload(true)} />
 
-        <Typography variant="h1" component="h1" fontSize={50} gutterBottom position="relative" top={"-150px"} textAlign={'center'} right={"150px"}>
-          {fullName}
-        </Typography>
+        <Typography variant="h1" component="h1" fontSize={30} gutterBottom position="relative" top={"-150px"} textAlign={'center'} right={"300px"}>
+       {patientData?.firstname}  {patientData?.lastname}    </Typography>
+        <Typography variant="h1" component="h1" fontSize={25} gutterBottom position="relative" top={"-150px"} textAlign={'center'} right={"300px"}>
+        <AiFillPhone />  + {formatPhoneNumber(patientData.PhoneNumber)}      </Typography>
+        <Typography color="blue-gray"  variant="h1" component="h1" fontSize={30} gutterBottom  sx={{ marginTop: '-70px' }} >
+      <b style={{ color: '#778899' }}> Personal informations</b>
+      </Typography>
+      <Typography variant="h1" component="h1" fontSize={30} gutterBottom>
+        Email: {patientData.email}
+      </Typography>
+    {/*     <Typography variant="h1" component="h1" fontSize={30} gutterBottom>
+        Password: {patientData.password}
+      </Typography>
+   <Typography variant="h1" component="h1" fontSize={30} gutterBottom>
+        Medical Record: {patientData.dossierMedical}   
+      </Typography>*/}
+
+      <Typography variant="h1" component="h1" fontSize={30} gutterBottom>
+        Gender: {patientData.Gender}
+      </Typography>
+      <Typography variant="h1" component="h1" fontSize={30} gutterBottom>
+        Height: {patientData.Height} cm
+      </Typography>
+      <Typography variant="h1" component="h1" fontSize={30} gutterBottom>
+        Weight: {patientData.Weight} kg
+      </Typography>
+      <Typography variant="h1" component="h1" fontSize={30} gutterBottom>
+        Blood Type: {patientData.BloodType}
+      </Typography>
+      <Typography variant="h1" component="h1" fontSize={30} gutterBottom>
+        Address: {patientData.Address}
+      </Typography>
+      <Typography variant="h1" component="h1" fontSize={30} gutterBottom>
+        Birthdate: {formatBirthdate(patientData.Birthdate)}
+      </Typography>
       </Box>
       {user.role === "patient" &&
         <Box>

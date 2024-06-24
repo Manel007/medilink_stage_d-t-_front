@@ -16,6 +16,8 @@ import UserWidget from "scenes/widgets/UserWidget";
 import UserWidgetProfile from "scenes/widgets/Profile/UserWidgetProfile";
 import { Calendar, Spin, theme } from 'antd';
 import Chart from "components/Chart";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 const onPanelChange = (value, mode) => {
   console.log(value.format('YYYY-MM-DD'), mode);
 };
@@ -64,11 +66,35 @@ const data = await response.json();
   const render=()=>{
 
   return (
-    <Box>
+    <Box  style={{ backgroundColor: '#B0C4DE' }} >
+          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"/>
+
       <Navbar />
-      
-        
-      <ProfileWidget user={user} userId={userId}/>
+<div  className="bg-gray-800">
+      <div className="container position-relative">
+  <div className="row">
+    <div className="col-lg-4 col-md-6 col-sm-12 p-2 d-flex gap-1">
+      <LeftWidgetProfile 
+        user={user} 
+        userId={userId} 
+        picturePath={user.picturePath}   
+        style={{ position: 'absolute', left: '30px' }} 
+      />
+    </div>
+    <div className="col-lg-8 col-md-6 col-sm-20 p-2 d-flex ">
+      <ProfileWidget 
+        user={user} 
+        userId={userId}
+      />
+    </div>
+  </div>
+</div>
+
+
+     
+
+
+
       <Box
         width="100%"
         padding="2rem 1%"
@@ -80,16 +106,14 @@ const data = await response.json();
           flexBasis={isNonMobileScreens ? "30%" : undefined}
           mt={isNonMobileScreens ? undefined : "2rem"}
         >
-      <LeftWidgetProfile user={user} userId={userId} picturePath={user.picturePath}  />
       </Box>
-      
+     
         <Box
           flexBasis={isNonMobileScreens ? "50%" : undefined}
           mt={isNonMobileScreens ? undefined : "2rem"}
         >
          
       
-        
          
       {isPatient&&
         <Chart data={data} xAxisKey="name" yAxisKey="value" yAxisLabel="blood glucose level,"  />
@@ -114,9 +138,11 @@ const data = await response.json();
       
       
      
-     
-   
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
     </Box>
+
   );
 }
   return (

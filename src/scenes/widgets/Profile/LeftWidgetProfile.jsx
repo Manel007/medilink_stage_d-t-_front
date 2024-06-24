@@ -26,6 +26,9 @@ console.log("userID from left widget profile",userId)
       <Divider />
       <FriendListWidget userId={userId} />
       <Divider />
+      <Typography fontSize="1rem"  fontWeight="500" mb="1rem">
+       hustling
+      </Typography>
     </WidgetWrapper>
   );
 };

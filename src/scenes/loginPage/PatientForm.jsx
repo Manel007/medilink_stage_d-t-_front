@@ -8,11 +8,17 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { Spin, notification } from 'antd';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import { Link } from 'react-router-dom';
+import TermsAndConditions from '../widgets/TermsAndConditions'; // Make sure to import your TermsAndConditions component
 
 const PatientForm = ({ handleFormSubmit }) => {
   const { palette } = useTheme();
   const role = "patient";
   const [loading, setLoading] = useState(false);
+  const [termsChecked, setTermsChecked] = useState(false);
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+
+
   const groupesSanguins = [
     "A positif (A+)",
     "A négatif (A-)",
@@ -23,6 +29,8 @@ const PatientForm = ({ handleFormSubmit }) => {
     "O positif (O+)",
     "O négatif (O-)"
   ];
+
+
   const BloodTypeSelect = ({ values, handleBlur, handleChange, touched, errors }) => (
     <FormControl sx={{ gridColumn: "span 2" }} error={Boolean(touched.BloodType) && Boolean(errors.BloodType)}>
       <InputLabel>Groupe sanguin</InputLabel>
@@ -299,6 +307,46 @@ const PatientForm = ({ handleFormSubmit }) => {
               </Dropzone>
             </Box>
           </Box>
+
+
+
+
+
+
+          <div className="mb-1 d-flex flex-column gap-3">
+      <div className="form-group">
+        <label htmlFor="terms" className="d-flex align-items-center">
+          <input
+            type="checkbox"
+            id="terms"
+            checked={termsChecked}
+            onChange={(e) => setTermsChecked(e.target.checked)}
+            className="form-check-input me-2"
+          />
+          <small className="text-muted">
+            I accept{' '}
+            <Link
+              to="#"
+              onClick={() => setIsConfirmationOpen(prevState => !prevState)}
+              style={{ textDecoration: 'underline', color: '#007bff' }}
+            >
+              Medilink terms and conditions
+            </Link>
+          </small>
+        </label>
+      </div>
+      <TermsAndConditions
+        isOpen={isConfirmationOpen}
+        onClose={() => setIsConfirmationOpen(false)}
+        onConfirm={setIsConfirmationOpen}
+      />
+      {!termsChecked && (
+        <small className="text-danger">
+          Please accept Medilink terms and conditions before registering.
+        </small>
+      )}
+    </div>
+
           <Button
             fullWidth
             type="submit"

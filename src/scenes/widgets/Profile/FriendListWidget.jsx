@@ -35,7 +35,9 @@ const FriendListWidget = ({ userId, onSelectFriend, TypePage }) => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
+    <>
    <Box>
+     
       <Typography fontSize="1rem" color={main} fontWeight="500" mb="1rem">
         Amis(e)s
       </Typography>
@@ -61,6 +63,8 @@ const FriendListWidget = ({ userId, onSelectFriend, TypePage }) => {
           )): <div></div>}
       </Box>
       </Box>
+
+      </>
   );
 };
 

@@ -53,8 +53,9 @@ const PatientForm = ({ handleFormSubmit }) => {
       )}
     </FormControl>
   );
-  
-  const genders = ["Femme", "Homme"];
+
+  const genders = ["Female", "Male","Other"];
+
   const GenderSelect = ({ values, handleBlur, handleChange, touched, errors }) => (
     <FormControl sx={{ gridColumn: "span 2" }} error={Boolean(touched.Gender) && Boolean(errors.Gender)}>
       <InputLabel>Genre</InputLabel>
@@ -77,6 +78,99 @@ const PatientForm = ({ handleFormSubmit }) => {
       )}
     </FormControl>
   );
+{/*  */}
+const SmokingStatusSelect = ({ values, handleBlur, handleChange, touched, errors }) => (
+  <FormControl sx={{ gridColumn: "span 2" }} error={Boolean(touched.smoking_status) && Boolean(errors.smoking_status)}>
+    <InputLabel>Statut de tabagisme</InputLabel>
+    <Select
+      label="Statut de tabagisme"
+      onBlur={handleBlur}
+      onChange={handleChange}
+      value={values.smoking_status}
+      name="smoking_status"
+    >
+      <MenuItem value="">Sélectionner</MenuItem>
+      {smoking_statuses.map((status, index) => (
+        <MenuItem key={index} value={status}>
+          {status}
+        </MenuItem>
+      ))}
+    </Select>
+    {touched.smoking_status && errors.smoking_status && (
+      <FormHelperText>{errors.smoking_status}</FormHelperText>
+    )}
+  </FormControl>
+);
+
+const ResidenceTypeSelect = ({ values, handleBlur, handleChange, touched, errors }) => (
+  <FormControl sx={{ gridColumn: "span 2" }} error={Boolean(touched.residence_type) && Boolean(errors.residence_type)}>
+    <InputLabel>Type de résidence</InputLabel>
+    <Select
+      label="Type de résidence"
+      onBlur={handleBlur}
+      onChange={handleChange}
+      value={values.residence_type}
+      name="residence_type"
+    >
+      <MenuItem value="">Sélectionner</MenuItem>
+      {residence_types.map((type, index) => (
+        <MenuItem key={index} value={type}>
+          {type}
+        </MenuItem>
+      ))}
+    </Select>
+    {touched.residence_type && errors.residence_type && (
+      <FormHelperText>{errors.residence_type}</FormHelperText>
+    )}
+  </FormControl>
+);
+
+const WorkTypeSelect = ({ values, handleBlur, handleChange, touched, errors }) => (
+  <FormControl sx={{ gridColumn: "span 2" }} error={Boolean(touched.work_type) && Boolean(errors.work_type)}>
+    <InputLabel>Type de travail</InputLabel>
+    <Select
+      label="Type de travail"
+      onBlur={handleBlur}
+      onChange={handleChange}
+      value={values.work_type}
+      name="work_type"
+    >
+      <MenuItem value="">Sélectionner</MenuItem>
+      {work_types.map((type, index) => (
+        <MenuItem key={index} value={type}>
+          {type}
+        </MenuItem>
+      ))}
+    </Select>
+    {touched.work_type && errors.work_type && (
+      <FormHelperText>{errors.work_type}</FormHelperText>
+    )}
+  </FormControl>
+);
+
+const MaritalStatusSelect = ({ values, handleBlur, handleChange, touched, errors }) => (
+  <FormControl sx={{ gridColumn: "span 2" }} error={Boolean(touched.marital_status) && Boolean(errors.marital_status)}>
+    <InputLabel>État civil</InputLabel>
+    <Select
+      label="État civil"
+      onBlur={handleBlur}
+      onChange={handleChange}
+      value={values.marital_status}
+      name="marital_status"
+    >
+      <MenuItem value="">Sélectionner</MenuItem>
+      {marital_statuses.map((status, index) => (
+        <MenuItem key={index} value={status}>
+          {status}
+        </MenuItem>
+      ))}
+    </Select>
+    {touched.marital_status && errors.marital_status && (
+      <FormHelperText>{errors.marital_status}</FormHelperText>
+    )}
+  </FormControl>
+);
+
 
   const initialValuesRegister = {
     firstname: "",
@@ -92,6 +186,12 @@ const PatientForm = ({ handleFormSubmit }) => {
     BloodType: "",
     Address: "",
     Birthdate: "",
+    residence_type: "",
+    work_type: "",
+    marital_status: "",
+    cigsPerDay: "",
+    Pregnancies: "",
+    smoking_status: ""
   };
 
   const registerSchema = yup.object().shape({
@@ -107,6 +207,12 @@ const PatientForm = ({ handleFormSubmit }) => {
     BloodType: yup.string().required("Champ requis"),
     Address: yup.string().required("Champ requis"),
     Birthdate: yup.date().required("Champ requis"),
+    residence_type: yup.string().required("Champ requis"),
+    work_type: yup.string().required("Champ requis"),
+    marital_status: yup.string().required("Champ requis"),
+    cigsPerDay: yup.number().required("Champ requis"),
+    Pregnancies: yup.number().required("Champ requis"),
+    smoking_status: yup.string().required("Champ requis"),
   });
 
   const handleSubmit = async (values, onSubmitProps) => {
@@ -126,11 +232,25 @@ const PatientForm = ({ handleFormSubmit }) => {
     formData.append("Address", values.Address);
     formData.append("Birthdate", values.Birthdate);
 
+    formData.append("residence_type", values.residence_type);
+    formData.append("work_type", values.work_type);
+    formData.append("marital_status", values.marital_status);
+    formData.append("cigsPerDay", values.cigsPerDay);
+    formData.append("Pregnancies", values.Pregnancies);
+    formData.append("smoking_status", values.smoking_status);
     await handleFormSubmit(formData, onSubmitProps);
     setLoading(false);
   };
 
+
+
+  const residence_types = ["Urban", "Rural"];
+  const work_types = ["Private", "Self-employed", "Govt_job", "Never_worked"];
+  const marital_statuses = ["married", "Not married"];
+  const smoking_statuses = ["formerly smoked", "never smoked", "smokes", "Unknown"];
   return (
+
+    
     <Formik
       onSubmit={handleSubmit}
       initialValues={initialValuesRegister}
@@ -223,7 +343,18 @@ const PatientForm = ({ handleFormSubmit }) => {
               touched={touched}
               errors={errors}
             />
-
+            {values.Gender === 'Female' && (
+              <TextField
+                label="Grossesses"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.Pregnancies}
+                name="Pregnancies"
+                error={Boolean(touched.Pregnancies) && Boolean(errors.Pregnancies)}
+                helperText={touched.Pregnancies && errors.Pregnancies}
+                sx={{ gridColumn: "span 2" }}
+              />
+            )}
             <TextField
               label="Taille"
               onBlur={handleBlur}
@@ -273,6 +404,46 @@ const PatientForm = ({ handleFormSubmit }) => {
               helperText={touched.Birthdate && errors.Birthdate}
               sx={{ gridColumn: "span 2" }}
             />
+            <ResidenceTypeSelect
+              values={values}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              touched={touched}
+              errors={errors}
+            />
+            <WorkTypeSelect
+              values={values}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              touched={touched}
+              errors={errors}
+            />
+            <MaritalStatusSelect
+              values={values}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              touched={touched}
+              errors={errors}
+            />
+            <SmokingStatusSelect
+              values={values}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              touched={touched}
+              errors={errors}
+            />
+            {values.smoking_status !== "never smoked" && (
+              <TextField
+                label="Cigarettes par jour"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.cigsPerDay}
+                name="cigsPerDay"
+                error={Boolean(touched.cigsPerDay) && Boolean(errors.cigsPerDay)}
+                helperText={touched.cigsPerDay && errors.cigsPerDay}
+                sx={{ gridColumn: "span 2" }}
+              />
+            )}
             <Box
               gridColumn="span 4"
               border={`1px solid ${palette.neutral.medium}`}
@@ -307,50 +478,43 @@ const PatientForm = ({ handleFormSubmit }) => {
               </Dropzone>
             </Box>
           </Box>
-
-
-
-
-
-
           <div className="mb-1 d-flex flex-column gap-3">
-      <div className="form-group">
-        <label htmlFor="terms" className="d-flex align-items-center">
-          <input
-            type="checkbox"
-            id="terms"
-            checked={termsChecked}
-            onChange={(e) => setTermsChecked(e.target.checked)}
-            className="form-check-input me-2"
-          />
-          <small className="text-muted">
-            I accept{' '}
-            <Link
-              to="#"
-              onClick={() => setIsConfirmationOpen(prevState => !prevState)}
-              style={{ textDecoration: 'underline', color: '#007bff' }}
-            >
-              Medilink terms and conditions
-            </Link>
-          </small>
-        </label>
-      </div>
-      <TermsAndConditions
-        isOpen={isConfirmationOpen}
-        onClose={() => setIsConfirmationOpen(false)}
-        onConfirm={setIsConfirmationOpen}
-      />
-      {!termsChecked && (
-        <small className="text-danger">
-          Please accept Medilink terms and conditions before registering.
-        </small>
-      )}
-    </div>
-
+            <div className="form-group">
+              <label htmlFor="terms" className="d-flex align-items-center">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  checked={termsChecked}
+                  onChange={(e) => setTermsChecked(e.target.checked)}
+                  className="form-check-input me-2"
+                />
+                <small className="text-muted">
+                  I accept{' '}
+                  <Link
+                    to="#"
+                    onClick={() => setIsConfirmationOpen(prevState => !prevState)}
+                    style={{ textDecoration: 'underline', color: '#007bff' }}
+                  >
+                    Medilink terms and conditions
+                  </Link>
+                </small>
+              </label>
+            </div>
+            <TermsAndConditions
+              isOpen={isConfirmationOpen}
+              onClose={() => setIsConfirmationOpen(false)}
+              onConfirm={setIsConfirmationOpen}
+            />
+            {!termsChecked && (
+              <small className="text-danger">
+                Please accept Medilink terms and conditions before registering.
+              </small>
+            )}
+          </div>
           <Button
             fullWidth
             type="submit"
-            disabled={loading}
+            disabled={loading || !termsChecked}
             sx={{
               m: "2rem 0",
               p: "1rem",

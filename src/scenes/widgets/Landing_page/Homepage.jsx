@@ -14,6 +14,11 @@ import { Form, Button, FloatingLabel, FormControl } from 'react-bootstrap';
 import { HomeIcon, Bars3Icon, KeyIcon, UserCircleIcon } from "@heroicons/react/24/solid";
 import Footer from "./Footer.jsx";
 import { useNavigate } from "react-router-dom";
+import { Container, Row, Col } from 'react-bootstrap';
+import {Divider} from "@mui/material";
+import {fadeIn} from "./variants.jsx";
+import { motion } from 'framer-motion';
+const fadeInVariants = fadeIn("up", 0, 2);
 
 const Slideshow = () => {
   const [slideIndex, setSlideIndex] = useState(0);
@@ -122,9 +127,16 @@ const Slideshow = () => {
 
 
 
-    <h1 className="display-3 font-weight-bold pt-3 pb-1 d-flex justify-content-center align-items-center">
+   
+    <motion.h1
+    className="display-3 font-weight-bold pt-3 pb-1 d-flex justify-content-center align-items-center"
+    variants={fadeIn("up", 0, 2)}
+    initial="hidden"
+    whileInView={"show"}
+    viewport={{ once: false, amount: 0.7 }}
+    > 
       Join Us As
-    </h1>
+    </motion.h1>
     <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '1rem 2rem' }}>
   <div className="row">
     
@@ -215,7 +227,99 @@ const Slideshow = () => {
 </p>
   </div>
 </div>
+ 
 
+<Container>
+  <Row className="g-4">
+    <Col sm={12} md={4}>
+      <motion.hr 
+        className="bg-primary rounded"
+        style={{ height: '6px' }}
+        variants={fadeIn("up", 0, 2)}
+        initial="hidden"
+        whileInView={"show"}
+        viewport={{ once: false, amount: 0.7 }}
+      />
+      <motion.h3
+        variants={fadeIn("up", 0, 2)}
+        initial="hidden"
+        whileInView={"show"}
+        viewport={{ once: false, amount: 0.7 }}
+        className="bg-primary rounded text-white"
+      > 
+        Developing Innovation
+      </motion.h3>
+      <motion.p 
+        variants={fadeIn("up", 0, 2)}
+        initial="hidden"
+        whileInView={"show"}
+        viewport={{ once: false, amount: 0.7 }}
+      >
+        We collaborate with your team to anticipate the future by exploring new technologies and pushing the boundaries of digital medical practices.
+      </motion.p>
+    </Col>
+    <Col sm={12} md={4}>
+      <motion.hr 
+        className="bg-primary rounded"
+        style={{ height: '6px' }}
+        variants={fadeIn("up", 0, 2)}
+        initial="hidden"
+        whileInView={"show"}
+        viewport={{ once: false, amount: 0.7 }}
+      />
+      <motion.h2
+        className="bg-primary rounded text-white"
+        variants={fadeIn("up", 0, 2)}
+        initial="hidden"
+        whileInView={"show"}
+        viewport={{ once: false, amount: 0.7 }}
+      > 
+        Cultivating Resilience
+      </motion.h2>
+      <motion.p 
+        variants={fadeIn("up", 0, 2)}
+        initial="hidden"
+        whileInView={"show"}
+        viewport={{ once: false, amount: 0.7 }}
+      >
+        We continuously adapt Medilink to respond to a changing healthcare environment, reducing risks and ensuring effective adaptation to new standards and regulations.
+      </motion.p>
+    </Col>
+    <Col sm={12} md={4}>
+      <motion.hr 
+        className="bg-primary rounded"
+        style={{ height: '6px' }}
+        variants={fadeIn("up", 0, 2)}
+        initial="hidden"
+        whileInView={"show"}
+        viewport={{ once: false, amount: 0.7 }}
+      />
+      <motion.h2
+        className="bg-primary rounded text-white "
+        variants={fadeIn("up", 0, 2)}
+        initial="hidden"
+        whileInView={"show"}
+        viewport={{ once: false, amount: 0.7 }}
+      > 
+        Improving Efficiency
+      </motion.h2>
+      <motion.p 
+        variants={fadeIn("up", 0, 2)}
+        initial="hidden"
+        whileInView={"show"}
+        viewport={{ once: false, amount: 0.7 }}
+      >
+        We optimize the interaction between technology and human care to increase productivity, support your growth, and enhance the patient experience in the long term.
+      </motion.p>
+    </Col>
+  </Row>
+</Container>
+
+
+
+
+
+ 
 <Footer/>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

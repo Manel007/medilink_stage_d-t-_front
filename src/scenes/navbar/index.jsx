@@ -20,6 +20,7 @@ import {
   Menu,
   Close,
 } from "@mui/icons-material";
+import Aa from "../profilePage/SearchBar"
 import { useDispatch, useSelector } from "react-redux";
 import { setMode, setLogout } from "state";
 import { useNavigate } from "react-router-dom";
@@ -139,7 +140,7 @@ const handlechange=(value)=>
   return (
     <FlexBetween padding="1rem 6%" backgroundColor={alt} boxShadow={1} position={"sticky"} top={0} zIndex={1000}>
       <FlexBetween gap="1.75rem">
-        <Typography
+   <Typography
           fontWeight="bold"
           fontSize="clamp(1rem, 2rem, 2.25rem)"
           color="primary"
@@ -152,12 +153,13 @@ const handlechange=(value)=>
           }}
         >
           Medilink
-        </Typography>
-        {isNonMobileScreens && (
-          <FlexBetween
+        </Typography> 
+        <Aa/>
+        {/*{isNonMobileScreens && (
+      <FlexBetween
             backgroundColor={neutralLight}
             borderRadius="9px"
-            gap="3rem"
+            gap="1rem"
             padding="0.1rem 1.5rem"
           >
             <InputBase placeholder="Search..." 
@@ -168,7 +170,7 @@ const handlechange=(value)=>
               <Search />
             </IconButton>
           </FlexBetween>
-        )}
+        )}  */} 
       </FlexBetween>
 
       {/* DESKTOP NAV */}

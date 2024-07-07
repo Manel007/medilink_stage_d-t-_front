@@ -62,7 +62,7 @@ const UserWidgetProfile = ({ user, userId }) => {
       )}
       <Divider />
       {/* FOURTH ROW */}
-      <Box p="1rem 0">
+      <Box>
         <FlexBetween gap="1rem" mb="0.5rem">
           <FlexBetween gap="1rem">
             <img src="../assets/twitter.png" alt="twitter" />

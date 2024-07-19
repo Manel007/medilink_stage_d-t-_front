@@ -22,7 +22,6 @@ import MedicationIcon from '@mui/icons-material/Medication';
 import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy';
 import ScienceIcon from '@mui/icons-material/Science';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import Navbar from "scenes/navbar";
 import { Calendar, Spin, theme } from 'antd';
 import Chart from "components/Chart";
 import ProfileWidget from "scenes/widgets/Profile/ProfileWidget";
@@ -32,6 +31,8 @@ import { useParams } from "react-router-dom";
 import ProfilePage from "./index";
 import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
 import SettingsIcon from '@mui/icons-material/Settings';
+import ChatIcon from '@mui/icons-material/Chat';
+
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
@@ -71,9 +72,7 @@ export default function MiniDrawer() {
         <CssBaseline />
         <Drawer variant="permanent" open={true}>
           <DrawerHeader>
-            <IconButton>
-              {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-            </IconButton>
+           
           </DrawerHeader>
           <Divider />
           <List>
@@ -85,7 +84,7 @@ export default function MiniDrawer() {
               { text: 'Medicine', icon: <MedicationIcon /> },
               { text: 'Pharmacy', icon: <LocalPharmacyIcon /> },
               { text: 'Analysis Lab', icon: <ScienceIcon /> },
-              { text: 'Medical Questions', icon: <HelpOutlineIcon /> },
+              { text: 'Medical Questions', icon: <ChatIcon /> },
             ].map((item, index) => (
               <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
                 <ListItemButton
@@ -111,7 +110,7 @@ export default function MiniDrawer() {
             {/* Add a divider for spacing */}
             <Divider sx={{ my: 2 }} />
             {/* Add Privacy Policy and Settings */}
-            {[
+            {[{ text: 'Help Center', icon: <HelpOutlineIcon /> },
               { text: 'Privacy Policy', icon: <PrivacyTipIcon /> },
               { text: 'Settings', icon: <SettingsIcon /> },
             ].map((item, index) => (

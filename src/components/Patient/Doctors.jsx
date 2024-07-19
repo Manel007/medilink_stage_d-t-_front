@@ -1,167 +1,288 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import WidgetWrapper from "../WidgetWrapper";
-import FlexBetween from "../FlexBetween";
-import { Box, Button, Typography } from "@mui/material";
-import UserImage from "../UserImage";
-import { setFriends } from "state";
-import { useNavigate } from "react-router-dom";
-import { getMedecins } from "Requests";
-import { Select } from "antd";
-
-const { Option } = Select;
+import { Box, Grid, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem, Card } from "@mui/material";
+import axios from "axios";
+import general from "./images_doctors/general.jpg";
+import cardiologist from "./images_doctors/cardiologist.jpg";
+import dentist from "./images_doctors/dentist.jpg";
+import neurologist from "./images_doctors/neurologist.jpg";
+import pediatrician from "./images_doctors/pediatrician.jpg";
+import Calendar from "./Interview"; // Assuming Calendar is another component
 
 const Doctors = ({ token, userId }) => {
-  const dispatch = useDispatch();
+  const [doctors, setDoctors] = useState([]);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [consultationData, setConsultationData] = useState({
+    IdMedecin: "",
+    IdPatient: userId,
+    DateConsultation: "",
+    NomMedecin: "",
+    description: "",
+    Speciality: "",
+  });
+  const [searchCriteria, setSearchCriteria] = useState({
+    specialite: "",
+    adresse: "",
+    gouvernorat: "",
+    disponibilite: "",
+    Name: "" // Add name to search criteria
+  });
+
   const apiUrl = process.env.REACT_APP_API_URL;
-  const [medecins, setMedecins] = useState([]);
-  const [specialityFilter, setSpecialityFilter] = useState('');
-  const [governorateFilter, setGovernorateFilter] = useState('');
-  const friends = useSelector((state) => state.user.friends);
-  const navigate = useNavigate();
-
-  const handleAppointment = async (userId, IdMedecin) => {
-    try {
-      const response = await fetch(`${apiUrl}/users/medecin/${IdMedecin}/appointment`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-
-      const updatedMedecin = await response.json();
-      // Handle the updated medecin data if needed
-    } catch (error) {
-      console.error("Error handling appointment:", error);
-      // Handle error appropriately, e.g., show a notification to the user
-    }
-  };
-
-  const patchFriend = async (userId, IdMedecin) => {
-    const response = await fetch(
-      `${apiUrl}/users/${userId}/${IdMedecin}`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    const data = await response.json();
-    dispatch(setFriends({ friends: data }));
-  };
 
   useEffect(() => {
-    const fetchMedecins = async () => {
+    const fetchDoctors = async () => {
       try {
-        const data = await getMedecins(token);
-        setMedecins(data);
+        const response = await axios.get(`${apiUrl}/schedule/medecins`);
+        setDoctors(response.data);
       } catch (error) {
-        // Handle the error, e.g., display an error message to the user
+        console.error("Error fetching doctors:", error);
       }
     };
 
-    if (token) {
-      fetchMedecins();
+    fetchDoctors();
+  }, [apiUrl]);
+
+  useEffect(() => {
+    const handleSearch = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/schedule/search`, {
+          params: searchCriteria
+        });
+        setDoctors(response.data);
+      } catch (error) {
+        console.error("Error fetching doctors based on criteria:", error);
+      }
+    };
+
+    handleSearch();
+  }, [searchCriteria, apiUrl]);
+
+  const handleScheduleClick = (doctor) => {
+    setSelectedDoctor(doctor);
+    setConsultationData({
+      ...consultationData,
+      IdMedecin: doctor._id,
+      NomMedecin: doctor.Name, // Assurez-vous que l'objet doctor a une propriété Name
+      Speciality: doctor.specialite,
+    });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setConsultationData({
+      ...consultationData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(`${apiUrl}/schedule/consultation`, consultationData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert("Consultation created successfully");
+      // Reset form
+      setConsultationData({
+        IdMedecin: "",
+        IdPatient: userId,
+        DateConsultation: "",
+        NomMedecin: "",
+        description: "",
+        Speciality: "",
+      });
+      setSelectedDoctor(null);
+    } catch (error) {
+      console.error("Error creating consultation:", error);
+      alert("Failed to create consultation");
     }
-  }, [token]);
-
-  const handleSpecialityChange = (value) => {
-    setSpecialityFilter(value);
   };
 
-  const handleGovernorateChange = (value) => {
-    setGovernorateFilter(value);
+  const handleClearCriteria = () => {
+    setSearchCriteria({
+      specialite: "",
+      adresse: "",
+      gouvernorat: "",
+      disponibilite: "",
+      Name: "" // Reset the name criteria
+    });
   };
 
-  const filteredMedecins = medecins.filter(medecin => {
-    return (
-      (!specialityFilter || medecin.specialite === specialityFilter) &&
-      (!governorateFilter || medecin.gouvernorat === governorateFilter)
-    );
-  });
+  const doctorImages = [
+    { src: general, speciality: "General" },
+    { src: cardiologist, speciality: "Cardiologist" },
+    { src: dentist, speciality: "Dentist" },
+    { src: neurologist, speciality: "Neurologist" },
+    { src: pediatrician, speciality: "Pediatrician" },
+  ];
 
   return (
     <>
-      <WidgetWrapper gap={"1.5rem"} mb={"1rem"}>
-      <Typography color={"black"} fontWeight="500" textAlign={"left"}>
-      Filtrer par:
-      </Typography>
-      
-        <FlexBetween>
-          <Select
-            placeholder="Specialité"
-            style={{ width: 200 }}
-            onChange={handleSpecialityChange}
+      <Box textAlign="center" mt={4}>
+        <Typography variant="h4">TOP SPECIALITIES</Typography>
+      </Box>
+      <Box display="flex" justifyContent="center" flexWrap="wrap">
+        {doctorImages.map((doctor) => (
+          <Box
+            key={doctor.speciality}
+            textAlign="center"
+            m={2}
+            sx={{
+              position: "relative",
+              overflow: "hidden",
+              borderRadius: "30%",
+              "&:hover img": {
+                transform: "scale(1.1)",
+                transition: "transform 0.3s ease-in-out",
+              },
+            }}
           >
-            {/* Add options for specialties dynamically if needed */}
-            <Option value="Cardiology">Cardiology</Option>
-            <Option value="Dermatology">Dermatology</Option>
-            <Option value="Neurology">Neurology</Option>
-          </Select>
-          <Select
-            placeholder="Gouvernorat"
-            style={{ width: 200 }}
-            onChange={handleGovernorateChange}
-          >
-            {/* Add options for governorates dynamically if needed */}
-            <Option value="Tunis">Tunis</Option>
-            <Option value="Sfax">Sfax</Option>
-            <Option value="Sousse">Sousse</Option>
-          </Select>
-        </FlexBetween>
-      </WidgetWrapper>
+            <img
+              src={doctor.src}
+              alt={doctor.speciality}
+              style={{ width: "150px", height: "150px", borderRadius: "20%" }}
+              onClick={() => setSearchCriteria({ ...searchCriteria, specialite: doctor.speciality })}
+            />
+            <Typography variant="body1">{doctor.speciality}</Typography>
+          </Box>
+        ))}
+      </Box>
 
-      {filteredMedecins.length === 0 ? (
-        <WidgetWrapper>
-          <Typography color={"black"} fontWeight="500">Pas des medecins!</Typography>
-        </WidgetWrapper>
-      ) : (
-        filteredMedecins.map((medecin) => (
-          medecin.user && (
-            <WidgetWrapper key={medecin._id} gap={"1.5rem"} mb={"1rem"}>
-              <FlexBetween gap="7rem">
-                <FlexBetween
-                  gap="4rem"
-                  mb="1.5rem"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => navigate(`/profile/${medecin.user._id}`)}
-                >
-                  <UserImage image={medecin.user.picturePath} size="55px" />
-                  <Box>
-                    <Typography color={"black"} fontWeight="500" textAlign={"left"}>
-                      {medecin.user.firstname} {medecin.user.lastname}
-                    </Typography>
-                    <Typography color={"black"} fontWeight="50" fontSize={12} textAlign={"left"} marginLeft={"20px"}>
-                      {medecin.specialite}
-                    </Typography>
-                    <FlexBetween>
-                      <img src="../assets/Position.jpeg" alt="Position" style={{ width: '15px', height: '15px' }} />
-                      <Typography color={"black"} fontWeight="50" fontSize={12} textAlign={"left"}>
-                        {medecin.gouvernorat}, {medecin.adresse}
-                      </Typography>
-                    </FlexBetween>
-                  </Box>
-                </FlexBetween>
-                <FlexBetween position={"absolute"} right={400}>
-                  <Button onClick={() => handleAppointment(userId, medecin._id)}>Rendez-vous</Button>
-                  <Button onClick={() => patchFriend(userId, medecin.user._id)}>
-                    {friends && friends.find((friend) => friend._id === medecin.user._id) ? "retirer" : "Suivre"}
+      <Box className="container mx-auto pt-8 flex">
+      <div className="w-1/4 pr-4">
+          <Card shadow="xl" className="p-4 bg-gray-50">
+            <div className="mb-4">
+              <Typography variant="title" color="gray">Search Filters:</Typography>
+              <div className="flex flex-wrap mt-2">
+                {Object.entries(searchCriteria).map(([key, value]) => {
+                  if (value) {
+                    return (
+                      <span
+                        key={key}
+                        className="inline-block text-gray-800 rounded-full px-3 py-1 text-sm font-semibold cursor-pointer my-4"
+                        style={{ backgroundColor: "#B0E0E6" }}
+                        onClick={() => setSearchCriteria({ ...searchCriteria, [key]: "" })}
+                      >
+                        {value} &times;
+                      </span>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+              <Button className="mt-2 bg-gray-500" title="Clear Filters" onClick={handleClearCriteria}>
+                Clear
+              </Button>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+  <div className="mb-4" style={{ flex: '1 1 20%' }}>
+    <Typography variant="paragraph" color="gray">Name:</Typography>
+    <TextField
+      type="text"
+      placeholder="Name"
+      value={searchCriteria.Name}
+      onChange={(e) => setSearchCriteria({ ...searchCriteria, Name: e.target.value })}
+      fullWidth
+    />
+  </div>
+  <div className="mb-4" style={{ flex: '1 1 20%' }}>
+    <Typography variant="paragraph" color="gray">Speciality:</Typography>
+    <TextField
+      type="text"
+      placeholder="Speciality"
+      value={searchCriteria.specialite}
+      onChange={(e) => setSearchCriteria({ ...searchCriteria, specialite: e.target.value })}
+      fullWidth
+    />
+  </div>
+  <div className="mb-4" style={{ flex: '1 1 20%' }}>
+    <Typography variant="paragraph" color="gray">Address:</Typography>
+    <TextField
+      type="text"
+      placeholder="Address"
+      value={searchCriteria.adresse}
+      onChange={(e) => setSearchCriteria({ ...searchCriteria, adresse: e.target.value })}
+      fullWidth
+    />
+  </div>
+  <div className="mb-4" style={{ flex: '1 1 20%' }}>
+    <Typography variant="paragraph" color="gray">Governorate:</Typography>
+    <TextField
+      type="text"
+      placeholder="Governorate"
+      value={searchCriteria.gouvernorat}
+      onChange={(e) => setSearchCriteria({ ...searchCriteria, gouvernorat: e.target.value })}
+      fullWidth
+    />
+  </div>
+</div>
+
+          </Card>
+        </div>
+        <div className="w-3/4">
+          <Box>
+            {doctors.map((doctor) => (
+              <Grid container spacing={2} key={doctor._id} mb={5} alignItems="center" sx={{ backgroundColor: '#FFFFFF', p: 2, borderRadius: 8 }}>
+                <Grid item xs={12} sm={3}>
+                  <Button variant="contained" onClick={() => handleScheduleClick(doctor)} fullWidth sx={{ backgroundColor: '#ADD8E6' }}>
+                    Schedule
                   </Button>
-                </FlexBetween>
-              </FlexBetween>
-            </WidgetWrapper>
-          )
-        ))
-      )}
+                </Grid>
+                <Grid item xs={12} sm={9} mb={2} sx={{ backgroundColor: '#FFFFFF', p: 2, borderRadius: 8 }}>
+                  <Typography variant="h6" fontWeight="bold">
+                    {doctor.Name} {doctor.SurName}
+                  </Typography>
+                  <Typography variant="body1" color="green">
+                    Speciality: {doctor.specialite}
+                  </Typography>
+                  <Typography variant="body1">Address: {doctor.adresse}</Typography>
+                  <Typography variant="body1">City: {doctor.ville}</Typography>
+                  <Typography variant="body1">Governorate: {doctor.gouvernorat}</Typography>
+                  {selectedDoctor && selectedDoctor._id === doctor._id && (
+                                 <Box component="form" onSubmit={handleSubmit} mt={2} mb={2} sx={{ backgroundColor: '#FFFFFF', p: 2, borderRadius: 8 }}>
+                                 <TextField
+                                   label="Date of Consultation"
+                                   type="date"
+                                   name="DateConsultation"
+                                   value={consultationData.DateConsultation}
+                                   onChange={handleInputChange}
+                                   fullWidth
+                                   required
+                                   sx={{ mb: 2, backgroundColor: 'lightgray' }}
+                                 />
+                                 <FormControl fullWidth required sx={{ mb: 2 }}>
+                                   <InputLabel id="description-label">Description</InputLabel>
+                                   <Select
+                                     id="description"
+                                     name="description"
+                                     value={consultationData.description}
+                                     onChange={handleInputChange}
+                                     sx={{ backgroundColor: 'lightgray' }}
+                                   >
+                                     <MenuItem value="Urgent">Urgent</MenuItem>
+                                     <MenuItem value="Routine">Routine</MenuItem>
+                                     <MenuItem value="Follow-up">Follow-up</MenuItem>
+                                     <MenuItem value="Initial">Initial</MenuItem>
+                                     <MenuItem value="Check-up">Check-up</MenuItem>
+                                     <MenuItem value="Emergency">Emergency</MenuItem>
+                                     <MenuItem value="Review">Review</MenuItem>
+                                   </Select>
+                                 </FormControl>
+                                 <Button type="submit" variant="contained" color="error" sx={{ mt: 2 }}>
+                                   Confirm
+                                 </Button>
+                               </Box>
+                 
+                  )}
+                </Grid>
+              </Grid>
+            ))}
+          </Box>
+        </div>
+        
+      <Calendar userId={userId} />
+
+      </Box>
     </>
   );
 };

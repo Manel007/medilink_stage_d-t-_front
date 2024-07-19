@@ -1,5 +1,4 @@
-import { Box, Typography, useTheme } from "@mui/material";
-
+import { Box, Typography, useTheme, Link } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import WidgetWrapper from "components/WidgetWrapper";
 
@@ -16,20 +15,23 @@ const AdvertWidget = () => {
         <Typography color={dark} variant="h5" fontWeight="500">
           Sponsorisé par :
         </Typography>
-        <Typography color={main} variant="h5" fontWeight="500">AromaBeauty</Typography>
+        <Typography color={main} variant="h5" fontWeight="500">Lloyd Assurance</Typography>
       </FlexBetween>
       <FlexBetween position={"relative" } left={70}>
       <img
-        width="120px"
+        width="150px"
         height="auto"
         alt="advert"
-        src={`http://localhost:3005/assets/info3.jpeg`} 
-        style={{ borderRadius: "0.75rem", margin: "0.75rem 0" } }
+        src={`http://localhost:3005/assets/lloydd.jpg`} 
+        style={{ borderRadius: "0.75rem", margin: "1rem 0" } }
       />
       </FlexBetween>
       <FlexBetween position={"relative" } left={70}>
-
-        <Typography color={medium}>AromaBeauty.com</Typography>
+      <Typography color={medium}>
+      <Link href="https://www.lloyd.com.tn" target="_blank" rel="noopener noreferrer">
+        https://www.lloyd.com.tn
+      </Link>
+      </Typography>
       </FlexBetween>
  
     </div>

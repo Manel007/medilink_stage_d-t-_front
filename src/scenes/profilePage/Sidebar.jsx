@@ -23,15 +23,11 @@ import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy';
 import ScienceIcon from '@mui/icons-material/Science';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { Calendar, Spin, theme } from 'antd';
-import Chart from "components/Chart";
-import ProfileWidget from "scenes/widgets/Profile/ProfileWidget";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
 import ProfilePage from "./index";
 import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ChatIcon from '@mui/icons-material/Chat';
+import doctors from  'components/Patient/Doctors';
 
 const drawerWidth = 240;
 
@@ -77,6 +73,7 @@ export default function MiniDrawer() {
           <Divider />
           <List>
             {[
+
               { text: 'Doctors', icon: <LocalHospitalIcon /> },
               { text: 'Medical Records', icon: <AssignmentIcon /> },
               { text: 'Messages', icon: <MessageIcon /> },
@@ -85,6 +82,7 @@ export default function MiniDrawer() {
               { text: 'Pharmacy', icon: <LocalPharmacyIcon /> },
               { text: 'Analysis Lab', icon: <ScienceIcon /> },
               { text: 'Medical Questions', icon: <ChatIcon /> },
+
             ].map((item, index) => (
               <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
                 <ListItemButton

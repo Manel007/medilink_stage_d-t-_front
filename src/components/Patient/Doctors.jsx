@@ -159,7 +159,7 @@ const Doctors = ({ token, userId }) => {
                     return (
                       <span
                         key={key}
-                        className="inline-block text-gray-800 rounded-full px-3 py-1 text-sm font-semibold cursor-pointer my-4"
+                        className="inline-block text-gray-800 rounded-full px-3 py-6 text-sm font-semibold cursor-pointer my-4"
                         style={{ backgroundColor: "#B0E0E6" }}
                         onClick={() => setSearchCriteria({ ...searchCriteria, [key]: "" })}
                       >

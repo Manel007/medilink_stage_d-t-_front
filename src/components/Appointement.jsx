@@ -22,7 +22,7 @@ const Appointement = () => {
     <>
 
 
-     
+     {/*
       {
 
         friends && friends.map((Friend) => (
@@ -66,7 +66,7 @@ const Appointement = () => {
 
           title="Rendez-Vous Annuler"
         ></Result>
-      </Modal>
+      </Modal>  */}
     </>
   )
 }

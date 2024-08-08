@@ -241,12 +241,11 @@ export default DossierMedicale;
 
 
 
-
 import React, { useState, useEffect } from "react";
 import MuiAlert from '@mui/material/Alert';
 import axios from "axios";
 import FilePresentIcon from '@mui/icons-material/FilePresent';
-import { Box, Button, Typography, useMediaQuery, IconButton, Snackbar } from "@mui/material";
+import { Box, Button, Typography, IconButton, Snackbar } from "@mui/material";
 
 const DossierMedicale = ({ userId }) => {
   const [files, setFiles] = useState([]);
@@ -258,7 +257,7 @@ const DossierMedicale = ({ userId }) => {
     const fetchMedicalRecords = async () => {
       try {
         const response = await axios.get(`${apiUrl}/dm/dossierMedical/${userId}`);
-        setFiles(response.data.files);
+        setFiles(response.data.files || []); // Assurez-vous que files est un tableau
       } catch (error) {
         console.error("Error fetching medical records:", error.message);
       }
@@ -268,7 +267,7 @@ const DossierMedicale = ({ userId }) => {
   }, [userId, apiUrl]);
 
   const handleFileChange = (event) => {
-    setFiles(event.target.files);
+    setFiles(Array.from(event.target.files)); // Convertir FileList en tableau
   };
 
   const handleUpload = async () => {
@@ -295,7 +294,7 @@ const DossierMedicale = ({ userId }) => {
 
       // Fetch updated file list
       const updatedResponse = await axios.get(`${apiUrl}/dm/dossierMedical/${userId}`);
-      setFiles(updatedResponse.data.files);
+      setFiles(updatedResponse.data.files || []); // Assurez-vous que files est un tableau
     } catch (error) {
       setMessage("Failed to upload medical records");
       setOpenSnackbar(true);
@@ -325,34 +324,148 @@ const DossierMedicale = ({ userId }) => {
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
+  const [patientInfo, setPatientInfo] = useState(null);
+  useEffect(() => {
+    const fetchMedicalRecords = async () => {
+      try {
+        // Récupérer les dossiers médicaux
+        const response = await axios.get(`${apiUrl}/dm/dossierMedical/${userId}`);
+        setFiles(response.data.files || []);
+  
+        // Récupérer les informations du patient
+        const patientResponse = await axios.get(`${apiUrl}/getusernamesurname/${userId}`);
+        setPatientInfo(patientResponse.data); // Supposons que la réponse contient { firstname, lastname }
+      } catch (error) {
+        console.error("Error fetching medical records or patient info:", error.message);
+      }
+    };
+  
+    fetchMedicalRecords();
+  }, [userId, apiUrl]);
 
   return (
     <Box>
-      <Typography variant="h4">Upload Medical Records</Typography>
-      <input type="file" multiple onChange={handleFileChange} />
-      <Button variant="contained" color="primary" onClick={handleUpload}>
+    <Typography
+      variant="h4"
+      gutterBottom
+      sx={{
+        fontWeight: 'bold',
+        color: '#333',
+        mb: 4, // Ajouter plus d'espace au bas pour séparer des autres sections
+        textAlign: 'center',
+      }}
+    >
+      Upload Medical Records
+    </Typography>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        p: 3,
+        mb: 6, // Espace supplémentaire avant la liste des fichiers
+        backgroundColor: '#f0f4f8', // Couleur de fond plus douce
+        borderRadius: '12px',
+        boxShadow: '0 6px 14px rgba(0, 0, 0, 0.15)',
+        border: '1px solid #ccc',
+      }}
+    >
+      <input
+        type="file"
+        multiple
+        onChange={handleFileChange}
+        style={{
+          marginBottom: '20px',
+          padding: '14px',
+          border: '2px dashed #aaa',
+          borderRadius: '12px',
+          backgroundColor: '#fff',
+          width: '100%',
+          maxWidth: '420px',
+        }}
+      />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleUpload}
+        sx={{
+          borderRadius: '8px',
+          textTransform: 'none',
+          padding: '10px 20px',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+          '&:hover': {
+            boxShadow: '0 6px 12px rgba(0, 0, 0, 0.25)',
+          },
+        }}
+      >
         Upload
       </Button>
-      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-        <MuiAlert onClose={handleCloseSnackbar} severity={message.includes("successfully") ? "success" : "error"} sx={{ width: '100%' }}>
-          {message}
-        </MuiAlert>
-      </Snackbar>
-      {files.length > 0 && (
-        <Box mt={2}>
-          <Typography variant="h6">Uploaded Medical Records:</Typography>
-          {files.map((file, index) => (
-            <Box key={index} textAlign="center" mb={2}>
-              <IconButton color="primary" onClick={() => downloadFile(file.filename)} sx={{ fontSize: '3rem' }}>
-                <FilePresentIcon fontSize="inherit" />
-              </IconButton>
-              <Typography variant="body2">{file.filename}</Typography>
-            </Box>
-          ))}
-        </Box>
-      )}
     </Box>
+    <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+      <MuiAlert onClose={handleCloseSnackbar} severity={message.includes("successfully") ? "success" : "error"} sx={{ width: '100%' }}>
+        {message}
+      </MuiAlert>
+    </Snackbar>
+    {Array.isArray(files) && files.length > 0 && (
+      <Box mt={4}>
+        <Typography
+          variant="h6"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+            color: '#333',
+            mb: 3, // Espace au bas pour séparer des fichiers affichés
+            textAlign: 'center',
+          }}
+        >
+          Uploaded Medical Records:
+        </Typography>
+        {files.map((file, index) => (
+          <Box
+            key={index}
+            textAlign="center"
+            mb={3}
+            p={3}
+            sx={{
+              backgroundColor: '#fff',
+              border: '1px solid #ddd',
+              borderRadius: '12px',
+              boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'scale(1.03)',
+              },
+            }}
+          >
+            <IconButton
+              color="primary"
+              onClick={() => downloadFile(file.filename)}
+              sx={{ fontSize: '2.5rem' }}
+            >
+              <FilePresentIcon fontSize="inherit" />
+            </IconButton>
+            <Typography
+              variant="body2"
+              sx={{ marginTop: '12px', fontWeight: 'bold', color: 'green' }}
+            >
+              Uploaded on: {new Date().toLocaleDateString()}
+            </Typography>
+
+              <Box mt={2}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#333' }}>
+                  Medical Record for manel tarhouni
+                </Typography>
+              </Box>
+
+          </Box>
+        ))}
+      </Box>
+    )}
+  </Box>
+  
   );
 };
 
 export default DossierMedicale;
+

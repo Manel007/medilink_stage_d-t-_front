@@ -172,14 +172,13 @@ const handlechange=(value)=>
           </FlexBetween>
         )}  */} 
       </FlexBetween>
-
+     
       {/* DESKTOP NAV */}
       {isNonMobileScreens ? (
         <FlexBetween gap="2rem"  position={'absolute'} right={90}>
         
           <a  href="/chat"><Message sx={{ fontSize: "25px", color: "black" }} /></a>
        
-          
       <Dropdown
     menu={{
       items,
@@ -243,6 +242,16 @@ const handlechange=(value)=>
         </IconButton>
         </div>
       )}
+<img
+  width="70px"
+  height="auto"
+  alt="advert"
+  src={`http://localhost:3005/assets/ai.jpg`} 
+  style={{
+    borderRadius: "0.75rem",
+    marginLeft: "16px" // Ajustez la valeur selon vos besoins
+  }}
+/>
 
       {/* MOBILE NAV */}
       {!isNonMobileScreens && isMobileMenuToggled && (
